@@ -25,6 +25,6 @@ module.exports = async function splitContractSetup(
         splitContract.address,
       ]
     )
-    .send({ shouldPollResponse: true });
+    .send();
   console.log("    granted mint & burn role to the split contract\n");
 };

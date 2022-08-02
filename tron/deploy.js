@@ -10,6 +10,8 @@ const wrapperContractSetup = require("./setupScripts/wrapperContract");
 const questRedeemContractSetup = require("./setupScripts/questRedeemContract");
 const battleFieldContractSetup = require("./setupScripts/battleFieldContract");
 const itemsMarketPlaceSetup = require("./setupScripts/itemsMarketPlace");
+const nftCollectionContractSetup = require("./setupScripts/nftCollection");
+const nftStarterContractSetup = require("./setupScripts/nftStarter");
 
 async function main() {
   /* CONTRACT PARAMETERS */
@@ -19,8 +21,8 @@ async function main() {
   });
 
   const devAddress = tronWeb.defaultAddress.hex;
-  const feeAddress = "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb";
-  const doubloonsPerBlock = 100;
+  const feeAddress = "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb"; // tron 0 address
+  const doubloonsPerBlock = "66000000000000000000";
   const startBlock = 0;
   const BFMintStart = 1640995200; // 2020/1/1
   const BFMintDuration = 31536000; // 1 year
@@ -37,24 +39,29 @@ async function main() {
   const QuestRedeemContract = require("../build/contracts/SpacePiratesQuestRedeem.json");
   const BattleFieldMintContract = require("../build/contracts/BattleFieldFirstCollection.json");
   const ItemsMarketPlace = require("../build/contracts/SpacePiratesItemsMarketPlace.json");
-
+  const NFTContract = require("../build/contracts/SpacePiratesNFT.json");
+  const NFTCollectionContract = require("../build/contracts/NFTCollectionFactory.json");
+  const NFTStarterContract = require("../build/contracts/NFTStarterBanner.json");
   /* CONTRACTS DEPLOY */
   console.log("\nDeploying contracts...\n");
   const tokensContract = await tronWeb.contract().new({
     abi: TokensContract.abi,
     bytecode: TokensContract.bytecode,
     feeLimit: feeLimit,
-    parameters: ["testuri.com/token/"],
+    parameters: ["https://metadata.space-pirates-testnet.com/metadata/"],
   });
   console.log("Space Pirates Tokens deployed to:", tokensContract.address);
 
-  const stakingContract = await tronWeb.contract().new({
+  /*const stakingContract = await tronWeb.contract().new({
     abi: StakingContract.abi,
     bytecode: StakingContract.bytecode,
     feeLimit: feeLimit,
     parameters: [tokensContract.address],
   });
   console.log("Space Pirates Staking deployed to:", stakingContract.address);
+  
+   * Currently non working, need some fix in the contract logic
+  */
 
   const splitContract = await tronWeb.contract().new({
     abi: SplitContract.abi,
@@ -140,10 +147,40 @@ async function main() {
     parameters: [tokensContract.address],
   });
   console.log("Market Place Contract deployed to:", itemsMarketPlace.address);
+
+  const nftContract = await tronWeb.contract().new({
+    abi: NFTContract.abi,
+    bytecode: NFTContract.bytecode,
+    feeLimit: feeLimit,
+    parameters: ["https://metadata.space-pirates-testnet.com/familiars/"],
+  });
+  console.log("NFT Contract deployed to:", nftContract.address);
+
+  const nftCollectionContract = await tronWeb.contract().new({
+    abi: NFTCollectionContract.abi,
+    bytecode: NFTCollectionContract.bytecode,
+    feeLimit: feeLimit,
+    parameters: [tokensContract.address, nftContract.address],
+  });
+  console.log(
+    "NFT Collection Factory Contract deployed to:",
+    nftCollectionContract.address
+  );
+
+  const nftStarterContract = await tronWeb.contract().new({
+    abi: NFTStarterContract.abi,
+    bytecode: NFTStarterContract.bytecode,
+    feeLimit: feeLimit,
+    parameters: [tokensContract.address, nftContract.address],
+  });
+  console.log(
+    "NFT Starter Collection Contract deployed to:",
+    nftStarterContract.address
+  );
   /* CONTRACTS SETUP */
   console.log("\nContracts setup...\n");
 
-  await stakingContractSetup(tokensContract, stakingContract);
+  //await stakingContractSetup(tokensContract, stakingContract);
   await splitContractSetup(tokensContract, splitContract);
   await faucetContractSetup(tokensContract, faucetContract);
   await factoryContractSetup(factoryContract);
@@ -155,7 +192,17 @@ async function main() {
   await wrapperContractSetup(tokensContract, wrapperContract);
   await questRedeemContractSetup(tokensContract, questRedeemContract);
   await battleFieldContractSetup(tokensContract, battleFieldMintContract);
-  await itemsMarketPlaceSetup(tokensContract, questRedeemContract);
+  await itemsMarketPlaceSetup(tokensContract, itemsMarketPlace);
+  await nftCollectionContractSetup(
+    tokensContract,
+    nftContract,
+    nftCollectionContract
+  );
+  await nftStarterContractSetup(
+    tokensContract,
+    nftContract,
+    nftStarterContract
+  );
 }
 
 main()

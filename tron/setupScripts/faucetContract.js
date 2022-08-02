@@ -8,17 +8,31 @@ module.exports = async function faucetContractSetup(
   console.log("  faucet contract setup");
   await tokensContract
     .grantMultiRole(
-      [roles.mint.asteroids, roles.mint.doubloons],
-      [faucetContract.address, faucetContract.address]
+      [
+        roles.mint.asteroids,
+        roles.mint.doubloons,
+        roles.mint.starterGem,
+        roles.mint.evocationGem,
+        roles.mint.breedingGem,
+      ],
+      [
+        faucetContract.address,
+        faucetContract.address,
+        faucetContract.address,
+        faucetContract.address,
+        faucetContract.address,
+      ]
     )
-    .send({ shouldPollResponse: true });
-  console.log("    granted mint role to the faucet contract");
-  await faucetContract
-    .setMintLimit(1, ethers.utils.parseUnits("10000"))
-    .send({ shouldPollResponse: true });
+    .send();
+  console.log("    granted mint and burn role to the faucet contract");
+  await faucetContract.setMintLimit(1, "10000000000000000000000").send();
   console.log("    setted mint limit of doubloons to 10000");
-  await faucetContract
-    .setMintLimit(2, ethers.utils.parseUnits("10"))
-    .send({ shouldPollResponse: true });
+  await faucetContract.setMintLimit(2, "10000000000000000000").send();
   console.log("    setted mint limit of asteroids to 10");
+  await faucetContract.setMintLimit(1000, 10).send();
+  console.log("    setted mint limit of starter gems to 10");
+  await faucetContract.setMintLimit(1001, 10).send();
+  console.log("    setted mint limit of evocation gems to 10");
+  await faucetContract.setMintLimit(1002, 10).send();
+  console.log("    setted mint limit of breeding gems to 10\n");
 };

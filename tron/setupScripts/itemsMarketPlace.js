@@ -1,29 +1,60 @@
 const roles = require("../roles.json");
 const ids = require("../ids.json");
 
+const maxUint120 = "1329227995784915872903807060280344575";
+
 module.exports = async function itemsMarketPlaceSetup(
   tokensContract,
   itemsMarketPlace
 ) {
   console.log("  market place contract setup");
   await tokensContract
-    .grantRole(roles.burn.doubloons, itemsMarketPlace.address)
-    .send({ shouldPollResponse: true });
-  console.log("    granted doubloons burn role");
-  await tokensContract
-    .grantRole(roles.burn.asteroids, itemsMarketPlace.address)
-    .send({ shouldPollResponse: true });
-  console.log("    granted asteroids burn role");
-  await tokensContract
-    .grantRole(roles.mint.items, itemsMarketPlace.address)
-    .send({ shouldPollResponse: true });
-  console.log("    granted items mint role");
-  await tokensContract
-    .grantRole(roles.mint.decorations, itemsMarketPlace.address)
-    .send({ shouldPollResponse: true });
-  console.log("    granted decorations mint role");
-  await tokensContract
-    .grantRole(roles.mint.battlefield, itemsMarketPlace.address)
-    .send({ shouldPollResponse: true });
-  console.log("    granted battlefield mint role\n");
+    .grantMultiRole(
+      [
+        roles.burn.doubloons,
+        roles.burn.asteroids,
+        roles.burn.items,
+        roles.mint.doubloons,
+        roles.mint.asteroids,
+        roles.mint.items,
+        roles.mint.decorations,
+        roles.mint.battlefield,
+      ],
+      [
+        itemsMarketPlace.address,
+        itemsMarketPlace.address,
+        itemsMarketPlace.address,
+        itemsMarketPlace.address,
+        itemsMarketPlace.address,
+        itemsMarketPlace.address,
+        itemsMarketPlace.address,
+        itemsMarketPlace.address,
+      ]
+    )
+    .send();
+  console.log("    granted all mint and burn roles");
+  await itemsMarketPlace
+    .createSale([1000], [3], 1, "10000000000000000000", 0, maxUint120, 3)
+    .call();
+  console.log("    created starter gems sale");
+  await itemsMarketPlace
+    .createSale([1001], [3], 1, "10000000000000000000", 0, maxUint120, 3)
+    .call();
+  console.log("    created evocation gems sale");
+  await itemsMarketPlace
+    .createSale([1002], [3], 1, "10000000000000000000", 0, maxUint120, 3)
+    .call();
+  console.log("    created breeding gems sale");
+  await itemsMarketPlace
+    .createSale(
+      [1000, 1001, 1002],
+      [3, 3, 3],
+      1,
+      "25000000000000000000",
+      0,
+      maxUint120,
+      3
+    )
+    .call();
+  console.log("    created gems bundle sale\n");
 };

@@ -7,23 +7,31 @@ module.exports = async function questRedeemContractSetup(
 ) {
   console.log("  quest redeem contract setup");
   await tokensContract
-    .grantRole(roles.mint.doubloons, questRedeemContract.address)
-    .send({ shouldPollResponse: true });
-  console.log("    granted mint role for doubloons");
-  await tokensContract
-    .grantRole(roles.mint.asteroids, questRedeemContract.address)
-    .send({ shouldPollResponse: true });
-  console.log("    granted mint role for asteroids");
-  await tokensContract
-    .grantRole(roles.mint.items, questRedeemContract.address)
-    .send({ shouldPollResponse: true });
-  console.log("    granted mint role for items");
-  await tokensContract
-    .grantRole(roles.mint.titles, questRedeemContract.address)
-    .send({ shouldPollResponse: true });
-  console.log("    granted mint role for titles");
-  await tokensContract
-    .grantRole(roles.burn.decorations, questRedeemContract.address)
-    .send({ shouldPollResponse: true });
-  console.log("    granted mint role for decorations\n");
+    .grantMultiRole(
+      [
+        roles.mint.doubloons,
+        roles.mint.asteroids,
+        roles.mint.items,
+        roles.mint.titles,
+        roles.mint.decorations,
+        roles.mint.battlefield,
+      ],
+      [
+        questRedeemContract.address,
+        questRedeemContract.address,
+        questRedeemContract.address,
+        questRedeemContract.address,
+        questRedeemContract.address,
+        questRedeemContract.address,
+      ]
+    )
+    .send();
+  console.log("    granted all mint roles");
+
+  const NPC_PUBLIC = process.env.NPC_PUBLIC;
+  if (NPC_PUBLIC) {
+    await questRedeemContract.updateVerifier(NPC_PUBLIC);
+    console.log("    setted the NPC verifier");
+  }
+  console.log("");
 };

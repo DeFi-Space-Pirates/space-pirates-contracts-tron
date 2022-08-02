@@ -8,24 +8,19 @@ module.exports = async function stakingContractSetup(
   console.log("  staking contract setup");
   await tokensContract
     .grantRole(roles.mint.doubloons, stakingContract.address)
-    .send({ shouldPollResponse: true });
+    .send();
   console.log("    granted doubloons mint role");
   await stakingContract
-    .createStakingPool(
-      ids.doubloons,
-      ids.doubloons,
-      ethers.BigNumber.from("2000000000000000000"),
-      0
-    )
-    .send({ shouldPollResponse: true });
+    .createStakingPool(ids.doubloons, ids.doubloons, "3000000000000000000", 0)
+    .send();
   console.log("    created doubloons staking pool");
   await stakingContract
     .createStakingPool(
       ids.stkAsteroids,
       ids.doubloons,
-      ethers.BigNumber.from("2000000000000000000"),
+      "3000000000000000000",
       0
     )
-    .send({ shouldPollResponse: true });
+    .send();
   console.log("    created stk-asteroids staking pool\n");
 };

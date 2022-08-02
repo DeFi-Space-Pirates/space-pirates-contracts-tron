@@ -8,10 +8,10 @@ module.exports = async function battleFieldContractSetup(
   console.log("  BFMint contract setup");
   await tokensContract
     .grantRole(roles.mint.battlefield, BFMintContract.address)
-    .send({ shouldPollResponse: true });
+    .send();
   console.log("    granted NFT mint role to the BFMint contract");
   await tokensContract
     .grantRole(roles.burn.doubloons, BFMintContract.address)
-    .send({ shouldPollResponse: true });
+    .send();
   console.log("    granted doubloons burn role to the BFMint contract\n");
 };
