@@ -7,13 +7,14 @@ module.exports = async function nftStarterContractSetup(
   nftStarterContract
 ) {
   console.log("  nft starter collection contract setup");
-  await tokensContract.grantRole(
-    roles.burn.starterGem,
-    nftStarterContract.address
-  );
+  await tokensContract
+    .grantRole(roles.burn.starterGem, nftStarterContract.address)
+    .send();
   console.log(
     "    granted starter gem burn role to the nft collection contract"
   );
-  await nftContract.grantRole(roles.nft.mint, nftStarterContract.address);
+  await nftContract
+    .grantRole(roles.nft.mint, nftStarterContract.address)
+    .send();
   console.log("    granted NFT mint role to the nft collection contract\n");
 };

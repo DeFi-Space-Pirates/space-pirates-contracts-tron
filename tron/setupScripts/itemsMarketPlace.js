@@ -35,15 +35,15 @@ module.exports = async function itemsMarketPlaceSetup(
   console.log("    granted all mint and burn roles");
   await itemsMarketPlace
     .createSale([1000], [3], 1, "10000000000000000000", 0, maxUint120, 3)
-    .call();
+    .send();
   console.log("    created starter gems sale");
   await itemsMarketPlace
     .createSale([1001], [3], 1, "10000000000000000000", 0, maxUint120, 3)
-    .call();
+    .send();
   console.log("    created evocation gems sale");
   await itemsMarketPlace
     .createSale([1002], [3], 1, "10000000000000000000", 0, maxUint120, 3)
-    .call();
+    .send();
   console.log("    created breeding gems sale");
   await itemsMarketPlace
     .createSale(
@@ -55,6 +55,6 @@ module.exports = async function itemsMarketPlaceSetup(
       maxUint120,
       3
     )
-    .call();
+    .send();
   console.log("    created gems bundle sale\n");
 };
